@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #2d3748; background-color: #f7fafc; margin: 0; padding: 20px; }
+    .card { background: #ffffff; border-radius: 8px; max-width: 680px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e2e8f0; }
+    .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: #ffffff; padding: 24px; text-align: center; }
+    .header h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0 0; opacity: 0.9; font-size: 14px; }
+    .content { padding: 24px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .badge-aws { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+    .badge-azure { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
+    .badge-gcp { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+    .table-details { width: 100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 20px; font-size: 14px; }
+    .table-details th { text-align: left; padding: 8px 12px; background: #edf2f7; color: #4a5568; font-weight: 600; border-bottom: 2px solid #cbd5e0; width: 35%; }
+    .table-details td { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; word-break: break-all; }
+    .section-title { font-size: 16px; font-weight: 600; color: #1a202c; border-bottom: 2px solid #3182ce; padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    .cta-btn { display: inline-block; background-color: #3182ce; color: #ffffff !important; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-top: 10px; }
+    .footer { background: #edf2f7; padding: 16px 24px; text-align: center; font-size: 12px; color: #718096; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>Cloud Provisioning Complete</h1>
+      <p>ServiceNow Ticket: <strong>{{ ticket_number }}</strong> | Status: <strong>Provisioned & Closed</strong></p>
+    </div>
+
+    <div class="content">
+      <p>Hello Project Team,</p>
+      <p>Your requested <strong>{{ cloud_provider }}</strong> environment for <strong>{{ project_name }}</strong> (Code: <code>{{ project_code }}</code>) has been successfully provisioned through enterprise automation and verified by the Cloud Engineering team.</p>
+
+      <div class="section-title">Provisioned Environment Details</div>
+      <table class="table-details">
+        <tr>
+          <th>Cloud Provider</th>
+          <td><span class="badge badge-{{ cloud_provider.lower() }}">{{ cloud_provider }}</span></td>
+        </tr>
+        <tr>
+          <th>Resource Name</th>
+          <td><strong>{{ resource_name }}</strong></td>
+        </tr>
+        <tr>
+          <th>Resource / Account ID</th>
+          <td><code>{{ provisioned_account_id }}</code></td>
+        </tr>
+        {% if aws_account_email %}
+        <tr>
+          <th>Root Account Email</th>
+          <td><code>{{ aws_account_email }}</code></td>
+        </tr>
+        {% endif %}
+        <tr>
+          <th>Assigned Organizational Unit</th>
+          <td>{{ payload.organizational_unit or payload.management_group or payload.folder_id or "Core Workloads" }}</td>
+        </tr>
+        <tr>
+          <th>Allocated Landing Network</th>
+          <td><code>{{ payload.landing_zone_vpc or payload.virtual_network or payload.vpc_network or "Default VPC" }}</code></td>
+        </tr>
+        <tr>
+          <th>Allocated Monthly Budget</th>
+          <td><strong>{{ cost_currency }}{{ estimated_cost }}</strong> (Duration: {{ project_duration }})</td>
+        </tr>
+        <tr>
+          <th>Data Classification</th>
+          <td><strong>{{ data_classification }}</strong></td>
+        </tr>
+        <tr>
+          <th>Primary / Secondary Owner</th>
+          <td>{{ primary_owner }} / {{ secondary_owner }}</td>
+        </tr>
+        <tr>
+          <th>Console Access Portal</th>
+          <td>
+            <a href="{{ console_url }}" target="_blank" class="cta-btn">Access {{ cloud_provider }} Console</a>
+          </td>
+        </tr>
+      </table>
+
+      <div class="section-title">Authorized Users Provisioned for Access</div>
+      <ul>
+        {% for email in user_emails %}
+        <li><code>{{ email }}</code></li>
+        {% endfor %}
+      </ul>
+
+      <div class="section-title">Automated Security & Governance Applied</div>
+      <ul>
+        {% for control in payload.security_controls %}
+        <li>{{ control }}</li>
+        {% endfor %}
+        <li>Budget alert triggers activated at 50%, 80%, and 100% notification limits.</li>
+      </ul>
+
+      <div class="section-title">Next Steps & Best Practices FAQ</div>
+      <p>Please review the attached <strong>Cloud Best Practices FAQ</strong> for identity onboarding, least-privilege role assignment, data encryption, and tagging compliance.</p>
+    </div>
+
+    <div class="footer">
+      <p>Enterprise Cloud Automation & Governance | ServiceNow Ticket {{ ticket_number }} | Auto-Generated</p>
+    </div>
+  </div>
+</body>
+</html>
